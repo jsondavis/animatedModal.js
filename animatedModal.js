@@ -55,7 +55,7 @@
 			};
 
 		for(a in animations){
-			if( el.style[a] !== undefined ){
+			if(el.style[a] !== undefined) {
 				return animations[a];
 			}
 		}
@@ -135,7 +135,9 @@
 		for (var i = 1; i < arguments.length; i++) {
 			var def = arguments[i];
 			for (var n in def) {
-				if (obj[n] === undefined) obj[n] = def[n];
+				if (obj[n] === undefined) {
+					obj[n] = def[n];
+				}
 			}
 		}
 		return obj;
@@ -149,16 +151,19 @@
 		animatedIn: 'zoomIn',
 		animatedOut: 'zoomOut',
 		animationDuration: '.6s',
-		closeBtn: '.close-modal',
+		closeBtn: '.close-modal', // set to false to disable close button binding.
 		color: '#fff',
 		height: '100%',
 		left: '0px',
+		modalBaseClass: 'animated-modal',
 		modalTarget: 'animated-modal',
 		opacityIn: '1',
 		opacityOut: '0',
 		overflow: 'auto',
 		position: 'fixed',
-		top: '0px',
+		visibilityIn: 'visible',
+		visibilityOut: 'hidden',
+		top: '0',
 		width: '100%',
 		zIndexIn: '9999',
 		zIndexOut: '-9999',
@@ -173,26 +178,13 @@
 	function AnimatedModal(options) {
 		var self = this;
 		self.opts = merge(options || {}, AnimatedModal.defaults, defaults);
-		self.modal = document.getElementById(self.opts.modalTarget);
+		self.modal = (typeof self.opts.modalTarget == 'object') ? self.opts.modalTarget : document.getElementById(self.opts.modalTarget);
 		addClass(self.modal, 'animated');
+		addClass(self.modal, self.opts.modalBaseClass);
 
-		self.modal.querySelector(self.opts.closeBtn).addEventListener('click', self.close.bind(self));
-
-		css(self.modal, {
-			'-moz-animation-duration': self.opts.animationDuration,
-			'-ms-animation-duration': self.opts.animationDuration,
-			'-webkit-animation-duration': self.opts.animationDuration,
-			'animation-duration': self.opts.animationDuration,
-			'background-color': self.opts.color,
-			'height': self.opts.height,
-			'left': self.opts.left,
-			'opacity': self.opts.opacityOut,
-			'overflow-y': self.opts.overflow,
-			'position': self.opts.position,
-			'top': self.opts.top,
-			'width': self.opts.width,
-			'z-index': self.opts.zIndexOut
-		});
+		if (self.opts.closeBtn) {
+			self.modal.querySelector(self.opts.closeBtn).addEventListener('click', self.close.bind(self));
+		}
 	}
 
 	// Global defaults that override the built-ins:
@@ -204,18 +196,22 @@
 		css(document.documentElement, {'overflow': 'hidden'});
 		css(document.body, {'overflow': 'hidden'});
 
-		if (hasClass(self.modal, self.opts.modalTarget+'-off')) {
+		if (hasClass(self.modal, self.opts.modalBaseClass+'-off')) {
 			removeClass(self.modal, self.opts.animatedOut);
-			removeClass(self.modal, self.opts.modalTarget+'-off');
-			addClass(self.modal, self.opts.modalTarget+'-on');
+			removeClass(self.modal, self.opts.modalBaseClass+'-off');
+			addClass(self.modal, self.opts.modalBaseClass+'-on');
 		}
 
-		if (hasClass(self.modal, self.opts.modalTarget+'-on')) {
+		if (hasClass(self.modal, self.opts.modalBaseClass+'-on')) {
 			if (typeof self.opts.afterOpen == 'function') {
 				self.opts.beforeOpen();
 			}
 
-			css(self.modal, {'opacity': self.opts.opacityIn, 'z-index': self.opts.zIndexIn});
+			css(self.modal, {
+				'opacity': self.opts.opacityIn,
+				'visibility': self.opts.visibilityIn,
+				'z-index': self.opts.zIndexIn
+			});
 			addClass(self.modal, this.opts.animatedIn);
 
 			self.modal.addEventListener(animationSupport, function openAnim() {
@@ -239,22 +235,24 @@
 			self.opts.beforeClose();
 		}
 
-		if (hasClass(self.modal, self.opts.modalTarget+'-on')) {
-			removeClass(self.modal, self.opts.modalTarget+'-on');
-			addClass(self.modal, self.opts.modalTarget+'-off');
+		if (hasClass(self.modal, self.opts.modalBaseClass+'-on')) {
+			removeClass(self.modal, self.opts.modalBaseClass+'-on');
+			addClass(self.modal, self.opts.modalBaseClass+'-off');
 		}
 
-		if (hasClass(self.modal, self.opts.modalTarget+'-off')) {
+		if (hasClass(self.modal, self.opts.modalBaseClass+'-off')) {
 			removeClass(self.modal, self.opts.animatedIn);
 			addClass(self.modal, self.opts.animatedOut);
 
 			self.modal.addEventListener(animationSupport, function closeAnim() {
-				css(self.modal, {'z-index': self.opts.zIndexOut});
+				css(self.modal, {
+					'visibility': self.opts.visibilityOut,
+					'z-index': self.opts.zIndexOut
+				});
 
 				if (typeof self.opts.afterOpen == 'function') {
 					self.opts.afterClose();
 				}
-
 				self.modal.removeEventListener(animationSupport, closeAnim);
 			});
 		}
