@@ -179,6 +179,7 @@
 		var self = this;
 		self.opts = merge(options || {}, AnimatedModal.defaults, defaults);
 		self.modal = (typeof self.opts.modalTarget == 'object') ? self.opts.modalTarget : document.getElementById(self.opts.modalTarget);
+		self.isOpen = false;
 		addClass(self.modal, 'animated');
 		addClass(self.modal, self.opts.modalBaseClass);
 
@@ -192,6 +193,7 @@
 
 	AnimatedModal.prototype.open = function() {
 		var self = this;
+		if (self.isOpen) {return};
 
 		css(document.documentElement, {'overflow': 'hidden'});
 		css(document.body, {'overflow': 'hidden'});
@@ -218,6 +220,7 @@
 				if (typeof self.opts.afterOpen == 'function') {
 					self.opts.afterOpen();
 				}
+				self.isOpen = true;
 				self.modal.removeEventListener(animationSupport, openAnim);
 			});
 		}
@@ -228,6 +231,7 @@
 
 	AnimatedModal.prototype.close = function() {
 		var self = this;
+		if (!self.isOpen) {return};
 		document.documentElement.removeAttribute('style');
 		document.body.removeAttribute('style');
 
@@ -253,6 +257,7 @@
 				if (typeof self.opts.afterOpen == 'function') {
 					self.opts.afterClose();
 				}
+				self.isOpen = false;
 				self.modal.removeEventListener(animationSupport, closeAnim);
 			});
 		}
