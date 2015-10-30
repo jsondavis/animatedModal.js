@@ -193,7 +193,7 @@
 
 	AnimatedModal.prototype.open = function() {
 		var self = this;
-		if (self.isOpen) {return};
+		if (self.isOpen) {return;}
 
 		css(document.documentElement, {'overflow': 'hidden'});
 		css(document.body, {'overflow': 'hidden'});
@@ -220,8 +220,16 @@
 				if (typeof self.opts.afterOpen == 'function') {
 					self.opts.afterOpen();
 				}
-				self.isOpen = true;
 				self.modal.removeEventListener(animationSupport, openAnim);
+				self.isOpen = true;
+
+				document.documentElement.addEventListener('keyup', function escClose(event) {
+					var key = event.keyCode || event.which;
+					if (key === 27) {
+						self.close(self);
+						document.documentElement.removeEventListener('keyup', escClose);
+					}
+				});
 			});
 		}
 
@@ -231,7 +239,7 @@
 
 	AnimatedModal.prototype.close = function() {
 		var self = this;
-		if (!self.isOpen) {return};
+		if (!self.isOpen) {return;}
 		document.documentElement.removeAttribute('style');
 		document.body.removeAttribute('style');
 
