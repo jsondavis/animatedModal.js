@@ -205,7 +205,7 @@
 		}
 
 		if (hasClass(self.modal, self.opts.modalBaseClass+'-on')) {
-			if (typeof self.opts.afterOpen == 'function') {
+			if (typeof self.opts.beforeOpen == 'function') {
 				self.opts.beforeOpen();
 			}
 
@@ -243,7 +243,7 @@
 		document.documentElement.removeAttribute('style');
 		document.body.removeAttribute('style');
 
-		if (typeof self.opts.afterOpen == 'function') {
+		if (typeof self.opts.beforeClose == 'function') {
 			self.opts.beforeClose();
 		}
 
@@ -262,7 +262,7 @@
 					'z-index': self.opts.zIndexOut
 				});
 
-				if (typeof self.opts.afterOpen == 'function') {
+				if (typeof self.opts.afterClose == 'function') {
 					self.opts.afterClose();
 				}
 				self.isOpen = false;
