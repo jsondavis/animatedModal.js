@@ -7,26 +7,23 @@
  *
  * Example:
 	var opts = {
-		modalTarget:'animatedModal', // the
-		position:'fixed',
-		width:'100%',
-		height:'100%',
-		top:'0px',
-		left:'0px',
+		animatedIn: 'zoomIn',
+		animatedOut: 'zoomOut',
+		closeBtn: '.close-modal',
+		modalBaseClass: 'animated-modal',
+		modalTarget: 'animated-modal',
+		opacityIn: '1',
+		opacityOut: '0',
+		visibilityIn: 'visible',
+		visibilityOut: 'hidden',
 		zIndexIn: '9999',
 		zIndexOut: '-9999',
-		color: '#fff',
-		opacityIn:'1',
-		opacityOut:'0',
-		animatedIn:'zoomIn',
-		animatedOut:'zoomOut',
-		animationDuration:'.6s',
-		overflow:'auto',
+
 		// Callbacks
-		beforeOpen: function() {},
-		afterOpen: function() {},
-		beforeClose: function() {},
-		afterClose: function() {}
+		afterClose: null,
+		afterOpen: null,
+		beforeClose: null,
+		beforeOpen: null
 	};
  */
 
@@ -150,28 +147,21 @@
 	var defaults = {
 		animatedIn: 'zoomIn',
 		animatedOut: 'zoomOut',
-		animationDuration: '.6s',
-		closeBtn: '.close-modal', // set to false to disable close button binding.
-		color: '#fff',
-		height: '100%',
-		left: '0px',
+		closeBtn: '.close-modal',
 		modalBaseClass: 'animated-modal',
 		modalTarget: 'animated-modal',
 		opacityIn: '1',
 		opacityOut: '0',
-		overflow: 'auto',
-		position: 'fixed',
 		visibilityIn: 'visible',
 		visibilityOut: 'hidden',
-		top: '0',
-		width: '100%',
 		zIndexIn: '9999',
 		zIndexOut: '-9999',
+
 		// Callbacks
-		beforeOpen: null,
+		afterClose: null,
 		afterOpen: null,
 		beforeClose: null,
-		afterClose: null
+		beforeOpen: null
 	};
 
 	/** AnimatedModal contructor */
@@ -180,8 +170,6 @@
 		self.opts = merge(options || {}, AnimatedModal.defaults, defaults);
 		self.modal = (typeof self.opts.modalTarget == 'object') ? self.opts.modalTarget : document.getElementById(self.opts.modalTarget);
 		self.isOpen = false;
-		addClass(self.modal, 'animated');
-		addClass(self.modal, self.opts.modalBaseClass);
 
 		if (self.opts.closeBtn) {
 			self.modal.querySelector(self.opts.closeBtn).addEventListener('click', self.close.bind(self));
@@ -216,21 +204,39 @@
 			});
 			addClass(self.modal, this.opts.animatedIn);
 
-			self.modal.addEventListener(animationSupport, function openAnim() {
+			if (animationSupport) {
+
+				self.modal.addEventListener(animationSupport, function openAnim() {
+					if (typeof self.opts.afterOpen == 'function') {
+						self.opts.afterOpen();
+					}
+					self.modal.removeEventListener(animationSupport, openAnim);
+					self.isOpen = true;
+					document.documentElement.addEventListener('keyup', function escClose(event) {
+						var key = event.keyCode || event.which;
+						if (key === 27) {
+							modal.close(modal);
+							document.documentElement.removeEventListener('keyup', escClose);
+						}
+					});
+				});
+
+			} else {
+
 				if (typeof self.opts.afterOpen == 'function') {
 					self.opts.afterOpen();
 				}
-				self.modal.removeEventListener(animationSupport, openAnim);
-				self.isOpen = true;
 
+				self.isOpen = true;
 				document.documentElement.addEventListener('keyup', function escClose(event) {
 					var key = event.keyCode || event.which;
 					if (key === 27) {
-						self.close(self);
+						modal.close(modal);
 						document.documentElement.removeEventListener('keyup', escClose);
 					}
 				});
-			});
+
+			}
 		}
 
 
@@ -256,7 +262,20 @@
 			removeClass(self.modal, self.opts.animatedIn);
 			addClass(self.modal, self.opts.animatedOut);
 
-			self.modal.addEventListener(animationSupport, function closeAnim() {
+			if (animationSupport) {
+				self.modal.addEventListener(animationSupport, function closeAnim() {
+					css(self.modal, {
+						'visibility': self.opts.visibilityOut,
+						'z-index': self.opts.zIndexOut
+					});
+
+					if (typeof self.opts.afterClose == 'function') {
+						self.opts.afterClose();
+					}
+					self.isOpen = false;
+					self.modal.removeEventListener(animationSupport, closeAnim);
+				});
+			} else {
 				css(self.modal, {
 					'visibility': self.opts.visibilityOut,
 					'z-index': self.opts.zIndexOut
@@ -266,8 +285,8 @@
 					self.opts.afterClose();
 				}
 				self.isOpen = false;
-				self.modal.removeEventListener(animationSupport, closeAnim);
-			});
+			}
+
 		}
 
 		return self;
