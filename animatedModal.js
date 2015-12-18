@@ -215,7 +215,7 @@
 					document.documentElement.addEventListener('keyup', function escClose(event) {
 						var key = event.keyCode || event.which;
 						if (key === 27) {
-							modal.close(modal);
+							self.close(self);
 							document.documentElement.removeEventListener('keyup', escClose);
 						}
 					});
@@ -231,7 +231,7 @@
 				document.documentElement.addEventListener('keyup', function escClose(event) {
 					var key = event.keyCode || event.which;
 					if (key === 27) {
-						modal.close(modal);
+						self.close(self);
 						document.documentElement.removeEventListener('keyup', escClose);
 					}
 				});
