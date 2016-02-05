@@ -36,9 +36,15 @@ The following is required for hiding the modal by default. Feel free to do what 
         overflow-y: auto;
         position: fixed;
         top: 0;
-        width: 100%;
-        z-index: -9999;
         visibility: hidden;
+        width: 100%;
+        z-index: -10;
+    }
+
+    .animated-modal-on {
+        opacity: 1;
+        visibility: visible;
+        z-index: 10;
     }
 
 

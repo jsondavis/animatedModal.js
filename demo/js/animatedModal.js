@@ -12,13 +12,6 @@
 		closeBtn: '.close-modal',
 		modalBaseClass: 'animated-modal',
 		modalTarget: 'animated-modal',
-		opacityIn: '1',
-		opacityOut: '0',
-		visibilityIn: 'visible',
-		visibilityOut: 'hidden',
-		zIndexIn: '9999',
-		zIndexOut: '-9999',
-
 		// Callbacks
 		afterClose: null,
 		afterOpen: null,
@@ -150,13 +143,6 @@
 		closeBtn: '.close-modal',
 		modalBaseClass: 'animated-modal',
 		modalTarget: 'animated-modal',
-		opacityIn: '1',
-		opacityOut: '0',
-		visibilityIn: 'visible',
-		visibilityOut: 'hidden',
-		zIndexIn: '9999',
-		zIndexOut: '-9999',
-
 		// Callbacks
 		afterClose: null,
 		afterOpen: null,
@@ -186,59 +172,47 @@
 		css(document.documentElement, {'overflow': 'hidden'});
 		css(document.body, {'overflow': 'hidden'});
 
-		if (hasClass(self.modal, self.opts.modalBaseClass+'-off')) {
-			removeClass(self.modal, self.opts.animatedOut);
-			removeClass(self.modal, self.opts.modalBaseClass+'-off');
-			addClass(self.modal, self.opts.modalBaseClass+'-on');
+		removeClass(self.modal, self.opts.animatedOut);
+		addClass(self.modal, self.opts.modalBaseClass+'-on');
+		addClass(self.modal, this.opts.animatedIn);
+
+		if (typeof self.opts.beforeOpen == 'function') {
+			self.opts.beforeOpen();
 		}
 
-		if (hasClass(self.modal, self.opts.modalBaseClass+'-on')) {
-			if (typeof self.opts.beforeOpen == 'function') {
-				self.opts.beforeOpen();
-			}
+		if (animationSupport) {
 
-			css(self.modal, {
-				'opacity': self.opts.opacityIn,
-				'visibility': self.opts.visibilityIn,
-				'z-index': self.opts.zIndexIn
-			});
-			addClass(self.modal, this.opts.animatedIn);
-
-			if (animationSupport) {
-
-				self.modal.addEventListener(animationSupport, function openAnim() {
-					if (typeof self.opts.afterOpen == 'function') {
-						self.opts.afterOpen();
-					}
-					self.modal.removeEventListener(animationSupport, openAnim);
-					self.isOpen = true;
-					document.documentElement.addEventListener('keyup', function escClose(event) {
-						var key = event.keyCode || event.which;
-						if (key === 27) {
-							modal.close(modal);
-							document.documentElement.removeEventListener('keyup', escClose);
-						}
-					});
-				});
-
-			} else {
-
+			self.modal.addEventListener(animationSupport, function openAnim() {
 				if (typeof self.opts.afterOpen == 'function') {
 					self.opts.afterOpen();
 				}
-
+				self.modal.removeEventListener(animationSupport, openAnim);
 				self.isOpen = true;
 				document.documentElement.addEventListener('keyup', function escClose(event) {
 					var key = event.keyCode || event.which;
 					if (key === 27) {
-						modal.close(modal);
+						self.close(self);
 						document.documentElement.removeEventListener('keyup', escClose);
 					}
 				});
+			});
 
+		} else {
+
+			if (typeof self.opts.afterOpen == 'function') {
+				self.opts.afterOpen();
 			}
-		}
 
+			self.isOpen = true;
+			document.documentElement.addEventListener('keyup', function escClose(event) {
+				var key = event.keyCode || event.which;
+				if (key === 27) {
+					self.close(self);
+					document.documentElement.removeEventListener('keyup', escClose);
+				}
+			});
+
+		}
 
 		return self;
 	};
@@ -253,21 +227,13 @@
 			self.opts.beforeClose();
 		}
 
-		if (hasClass(self.modal, self.opts.modalBaseClass+'-on')) {
-			removeClass(self.modal, self.opts.modalBaseClass+'-on');
-			addClass(self.modal, self.opts.modalBaseClass+'-off');
-		}
-
-		if (hasClass(self.modal, self.opts.modalBaseClass+'-off')) {
 			removeClass(self.modal, self.opts.animatedIn);
 			addClass(self.modal, self.opts.animatedOut);
 
 			if (animationSupport) {
 				self.modal.addEventListener(animationSupport, function closeAnim() {
-					css(self.modal, {
-						'visibility': self.opts.visibilityOut,
-						'z-index': self.opts.zIndexOut
-					});
+
+					removeClass(self.modal, self.opts.modalBaseClass+'-on');
 
 					if (typeof self.opts.afterClose == 'function') {
 						self.opts.afterClose();
@@ -276,10 +242,8 @@
 					self.modal.removeEventListener(animationSupport, closeAnim);
 				});
 			} else {
-				css(self.modal, {
-					'visibility': self.opts.visibilityOut,
-					'z-index': self.opts.zIndexOut
-				});
+
+				removeClass(self.modal, self.opts.modalBaseClass+'-on');
 
 				if (typeof self.opts.afterClose == 'function') {
 					self.opts.afterClose();
@@ -287,12 +251,9 @@
 				self.isOpen = false;
 			}
 
-		}
-
 		return self;
 
 	};
-
 
 	return AnimatedModal;
 
