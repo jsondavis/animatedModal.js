@@ -25,7 +25,7 @@ Whatever element you're using for the modal you'll likely want to add `animated`
 If you plan to use with [Dan Eden's animate css](https://github.com/daneden/animate.css) (which you do) then you'll need to include animate.css
 If you're rocking libsass then checkout Tom Gillard's [Sass port](https://github.com/tgdev/animate-sass).
 
-The following is required for hiding the modal by default. Feel free to do what you like with it.
+The following is required for hiding and showing the modal.
 
     .animated-modal {
         animation-duration: 0.5s;
@@ -67,20 +67,14 @@ The following options can be declared when creating a new AnimatedModal
 
     animatedIn: 'zoomIn', // the animate.css class to apply for open animation.
     animatedOut: 'zoomOut', // the animate.css class to apply for close animation.
-    closeBtn: '.close-modal', // A reference to the element in your content that closes the modal.
+    closeBtn: '.close-modal', // A reference to the element in your content that closes the modal. Can be false to handle closing externally.
     modalBaseClass: 'animated-modal', // used for applying 'on' and 'off' classes to the modal
-    modalTarget: 'animated-modal', // the ID of the modal.
-    opacityIn: '1', // opacity value on open.
-    opacityOut: '0', // opacity value on close.
-    visibilityIn: 'visible', // visibility value on open.
-    visibilityOut: 'hidden', // visibility value on close.
-    zIndexIn: '9999', // z-index value on open.
-    zIndexOut: '-9999', // z-index value on close.
-
+    modalTarget: 'animated-modal', // the ID of the modal or a DOM element.
 
 ## Callbacks
 The following callbacks are available before / after open / close.
     afterClose: null,
     afterOpen: null,
     beforeClose: null,
-    beforeOpen: null
+    beforeOpen: null,
+    escClose: null, // only fires on esc key close.
