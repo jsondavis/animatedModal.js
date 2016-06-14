@@ -1,0 +1,22 @@
+{
+  "name": "animatedmodaljs",
+  "version": "1.0.0",
+  "description": "A fork of a fork of joaopereirawd's animatedModal.js library.  See https://github.com/joaopereirawd/animatedModal.js",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jsondavis/animatedModal.js.git"
+  },
+  "keywords": [
+    "modal"
+  ],
+  "author": "joaopereirawd",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/jsondavis/animatedModal.js/issues"
+  },
+  "homepage": "https://github.com/jsondavis/animatedModal.js#readme"
+}
